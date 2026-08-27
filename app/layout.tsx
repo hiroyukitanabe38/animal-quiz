@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     siteName: "どうぶつクイズ",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "どうぶつクイズ",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "どうぶつクイズ 🐾",
     description: "どうぶつの名前、わかるかな？楽しく遊べるどうぶつクイズ！",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   icons: {
     icon: "/favicon.svg",
