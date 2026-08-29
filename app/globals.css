@@ -100,9 +100,9 @@ button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
 .choice-button:hover { transform: translateY(-2px); filter: brightness(1.02); }
 .choice-button:active { transform: translateY(4px); box-shadow: 0 2px 0 #a9cedd; }
 .choice-mark { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: #fff; background: var(--blue); box-shadow: 0 4px 0 #3784bf; font-weight: 900; }
-.choice-2 { border-color: #c9e4ba; box-shadow-color: #acd398; }.choice-2 .choice-mark { background: var(--green); box-shadow-color: var(--green-dark); }
-.choice-3 { border-color: #f6d4a4; box-shadow-color: #e7bd7e; }.choice-3 .choice-mark { background: #f0a33b; box-shadow-color: #cf7b15; }
-.choice-4 { border-color: #f2c3cf; box-shadow-color: #dea7b5; }.choice-4 .choice-mark { background: var(--pink); box-shadow-color: #dc5872; }
+.choice-2 { border-color: #c9e4ba; box-shadow-color: #acd398; }.choice-2 .choice-mark { background: var(--green); box-shadow: 0 4px 0 var(--green-dark); }
+.choice-3 { border-color: #f6d4a4; box-shadow-color: #e7bd7e; }.choice-3 .choice-mark { background: #f0a33b; box-shadow: 0 4px 0 #cf7b15; }
+.choice-4 { border-color: #f2c3cf; box-shadow-color: #dea7b5; }.choice-4 .choice-mark { background: var(--pink); box-shadow: 0 4px 0 #dc5872; }
 .choice-wrong { animation: shake .45s ease; background: #fff0f0; border-color: #f49797; }
 @keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
 .try-again { margin: 19px 0 0; color: #418b64; font-weight: 900; }
