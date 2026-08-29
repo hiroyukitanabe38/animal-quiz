@@ -20,7 +20,7 @@ html { min-height: 100%; background: var(--sky); }
 body { margin: 0; color: var(--ink); background: var(--sky); font-family: "Hiragino Maru Gothic ProN", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif; }
 button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
 button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
-.animal-art { display: inline-block; width: 100%; aspect-ratio: 1; background-repeat: no-repeat; background-size: 300% 200%; background-color: transparent; filter: drop-shadow(0 8px 7px rgba(35, 80, 94, .16)); }
+.animal-art { display: inline-block; width: 100%; aspect-ratio: 1; background-repeat: no-repeat; background-position: center; background-size: contain; background-color: transparent; filter: drop-shadow(0 8px 7px rgba(35, 80, 94, .16)); }
 .animal-silhouette { filter: brightness(0) opacity(.42); }
 
 .app { position: relative; min-height: 100svh; overflow-x: hidden; padding: 30px 20px 84px; background: linear-gradient(180deg, #dff4ff 0%, #eefaff 56%, #fffaf0 100%); }
