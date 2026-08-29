@@ -85,13 +85,6 @@ export default function Home() {
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       try {
-        // Temporary visual-audit helper. Removed before merging to main.
-        if (new URLSearchParams(window.location.search).has("audit")) {
-          setProgress(Object.fromEntries(animals.map((animal) => [animal.id, 2])) as Progress);
-          setScreen("book");
-          setReady(true);
-          return;
-        }
         const saved = window.localStorage.getItem("animal-quiz-progress-v1");
         if (saved) setProgress(JSON.parse(saved) as Progress);
       } catch {}
