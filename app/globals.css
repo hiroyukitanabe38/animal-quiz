@@ -47,7 +47,7 @@ button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
 @keyframes animalBob { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
 
 .primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 60px; padding: 13px 28px; border: 0; border-radius: 22px; color: #fff; background: linear-gradient(180deg, #ff9b5f, var(--orange)); box-shadow: 0 7px 0 var(--orange-dark), 0 13px 26px rgba(225, 103, 45, .22); font-weight: 900; font-size: 20px; cursor: pointer; transition: transform .14s, box-shadow .14s; }
-.primary-button:hover { transform: translateY(-2px); box-shadow: 0 9px 0 var(--orange-dark), 0 16px 28px rgba(225, 103, 45, .24); }
+.primary-button:hover { transform: translateY(-2px); box-shadow: 0 9px 0 var(--orange-dark), 0 16px 28px rgba(225, 103, 45,.24); }
 .primary-button:active { transform: translateY(5px); box-shadow: 0 2px 0 var(--orange-dark); }
 .start-button { width: min(430px, 92%); min-height: 72px; font-size: clamp(20px, 5vw, 25px); }
 .play-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.26); font-size: 19px; padding-left: 3px; }
@@ -113,7 +113,7 @@ button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
 .is-wrong .result-kicker { color: #778793; }
 .result-screen h2 { margin: 0; color: var(--orange); font-size: clamp(45px, 12vw, 68px); letter-spacing: .08em; text-shadow: 0 4px 0 white; }
 .is-wrong h2 { color: #718696; }
-.result-animal { position: relative; display: grid; width: 210px; height: 210px; margin: 8px auto 2px; place-items: center; }
+.result-animal { position: relative; display: grid; width: 210px; height: 210px; margin: 8px auto 2px; place-items: center; overflow: hidden; border-radius: 28px; }
 .animal-glow { position: absolute; inset: 20px; border-radius: 50%; background: radial-gradient(circle, #fff9b8, rgba(255,255,255,.45) 60%, transparent 62%); animation: glow 2.4s ease-in-out infinite; }
 .is-wrong .animal-glow { filter: grayscale(.6); opacity: .65; }
 .result-animal > .animal-art { position: relative; width: 205px; animation: resultPop .5s cubic-bezier(.2,1.5,.5,1); }
@@ -151,7 +151,7 @@ button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
 .animal-card { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 175px; padding: 14px 7px 11px; border: 3px solid #fff; border-radius: 23px; background: rgba(255,255,255,.9); box-shadow: 0 5px 0 rgba(52,101,119,.13), 0 10px 20px rgba(52,101,119,.08); cursor: pointer; }
 .animal-card.found:hover { transform: translateY(-3px); }
 .animal-card-difficulty { position: absolute; top: 8px; right: 9px; font-size: 12px; }
-.animal-card-image { display: grid; width: 91px; height: 91px; place-items: center; }
+.animal-card-image { display: grid; width: 91px; height: 91px; place-items: center; overflow: hidden; border-radius: 16px; }
 .animal-card-image .animal-art { width: 91px; }
 .animal-card strong { min-height: 39px; display: grid; place-items: center; font-size: 14px; line-height: 1.25; }
 .animal-card.unknown { cursor: default; color: #87939a; background: rgba(225,235,237,.86); filter: grayscale(1); }
@@ -220,6 +220,7 @@ button:focus-visible { outline: 4px solid #2b79c2; outline-offset: 3px; }
   .animal-grid { grid-template-columns: repeat(3, 1fr); gap: 9px; }
   .animal-card { min-height: 143px; border-radius: 19px; }
   .animal-card-image { width: 66px; height: 66px; font-size: 50px; }
+  .animal-card-image .animal-art { width: 66px; }
   .animal-card strong { font-size: 12px; }
   .medal-grid { grid-template-columns: 1fr; }
   .result-burst { letter-spacing: 90px; }
