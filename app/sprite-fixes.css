@@ -1,6 +1,25 @@
-/* Targeted sprite-cell cleanup.
-   The rhino artwork in sheet-03 shares stray pixels from the neighboring cells.
-   Clip only the contaminated right/bottom edges without changing the sprite position. */
+/* Sprite positioning corrections.
+   These rules are applied to the shared AnimalArt component, so the fixes affect
+   result screens, the animal book, modal details, and any other place that reuses
+   the same sprite artwork.
+
+   sheet-03 top row:
+   - 0% 0%  = hippo
+   - 50% 0% = rhino
+
+   The source artwork for these two animals is not centered inside its nominal
+   3x2 sprite cell. The rhino extends too far to the left (cutting the nose) while
+   pixels from the crocodile cell appear on the right. The hippo is also slightly
+   left-heavy. Shift the viewed sprite window instead of clipping the animal. */
+
+/* カバ: 少し右へ寄せ、右隣セル側の不要な領域を見せにくくする */
+.animal-art[style*="sheet-03.webp"][style*="0% 0%"] {
+  background-position: -3% 0% !important;
+  clip-path: none !important;
+}
+
+/* サイ: 表示領域を左へずらして鼻まで収め、右側のワニ断片を外す */
 .animal-art[style*="sheet-03.webp"][style*="50% 0%"] {
-  clip-path: inset(0 18% 14% 0);
+  background-position: 44% 0% !important;
+  clip-path: none !important;
 }
