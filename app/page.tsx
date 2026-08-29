@@ -229,8 +229,16 @@ export default function Home() {
             <ol>{current.hints.map((hint, index) => <li key={hint}><span>{index + 1}</span><p>{hint}</p></li>)}</ol>
             {attempt >= 2 && (
               <div className="extra-hints" role="status">
-                <div className="special-hint extra-hint-one"><span>✨ ついかヒント 1</span><strong>{current.extraHint}</strong></div>
-                {attempt === 3 && <div className="special-hint extra-hint-two"><span>🔤 ついかヒント 2</span><strong>「{current.initial}」から はじまる どうぶつだよ！</strong></div>}
+                <div className="special-hint extra-hint-one">
+                  <div className="special-hint-title"><span aria-hidden="true">💡</span><b>もうひとつ ヒント！</b></div>
+                  <strong>{current.extraHint}</strong>
+                </div>
+                {attempt === 3 && (
+                  <div className="special-hint extra-hint-two">
+                    <div className="special-hint-title"><span aria-hidden="true">🔍</span><b>さいごの ヒント！</b></div>
+                    <strong>「{current.initial}」から はじまる どうぶつだよ！</strong>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -242,7 +250,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-          {attempt > 1 && <p className="try-again">{attempt === 2 ? "ついかヒントを よんで、もう いちど！" : "さいごの チャレンジ！ ゆっくり かんがえよう"}</p>}
+          {attempt > 1 && <p className="try-again">{attempt === 2 ? "ヒントを よんで、もう いちど！" : "さいごの チャレンジ！ ゆっくり かんがえよう"}</p>}
         </section>
       )}
 
