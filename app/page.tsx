@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { animals, difficultyLabels, type AnimalQuiz, type Difficulty } from "./animals";
+import {
+  animals,
+  difficultyIcons,
+  difficultyLabels,
+  difficultyOrder,
+  difficultyTotals,
+  type AnimalQuiz,
+  type Difficulty,
+} from "./animals";
 
 type Screen = "home" | "quiz" | "result" | "book" | "medals";
-type Star = 0 | 1 | 2;
+type Star = 0 | 1 | 2 | 3;
 type Progress = Record<string, Star>;
 type Result = { animal: AnimalQuiz; correct: boolean; stars: Star };
 type Filter = "all" | Difficulty;
@@ -14,7 +22,6 @@ const medalNames = [
   "どうぶつたんけんか", "どうぶつけんきゅうか", "どうぶつスペシャリスト", "どうぶつエキスパート", "どうぶつマスター",
 ];
 
-const difficultyIcons: Record<Difficulty, string> = { easy: "🟢", medium: "🟡", hard: "🔴" };
 const animalImageSources = animals.map((animal) => `/animals/individual/${animal.imageKey}.webp`);
 let animalSheetsLoadPromise: Promise<void> | null = null;
 
@@ -49,6 +56,7 @@ function Stars({ count, large = false }: { count: Star; large?: boolean }) {
     <span className={large ? "stars stars-large" : "stars"} aria-label={`ほし ${count}こ`}>
       <span className={count >= 1 ? "star-on" : "star-off"}>★</span>
       <span className={count >= 2 ? "star-on" : "star-off"}>★</span>
+      <span className={count >= 3 ? "star-on" : "star-off"}>★</span>
     </span>
   );
 }
@@ -72,12 +80,13 @@ export default function Home() {
   const [progress, setProgress] = useState<Progress>({});
   const [current, setCurrent] = useState<AnimalQuiz | null>(null);
   const [choices, setChoices] = useState<string[]>([]);
-  const [attempt, setAttempt] = useState<1 | 2>(1);
+  const [attempt, setAttempt] = useState<1 | 2 | 3>(1);
   const [wrongChoice, setWrongChoice] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalQuiz | null>(null);
   const [newMedal, setNewMedal] = useState<number | null>(null);
+  const [pendingMedal, setPendingMedal] = useState<number | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [animalArtReady, setAnimalArtReady] = useState(false);
   const [ready, setReady] = useState(false);
@@ -111,7 +120,7 @@ export default function Home() {
   const totalStars = useMemo(() => Object.values(progress).reduce<number>((sum, value) => sum + value, 0), [progress]);
 
   const countsByDifficulty = useMemo(() => {
-    const output: Record<Difficulty, number> = { easy: 0, medium: 0, hard: 0 };
+    const output: Record<Difficulty, number> = { easy: 0, normal: 0, medium: 0, hard: 0 };
     animals.forEach((animal) => { if ((progress[animal.id] ?? 0) > 0) output[animal.difficulty] += 1; });
     return output;
   }, [progress]);
@@ -124,6 +133,7 @@ export default function Home() {
     setAttempt(1);
     setWrongChoice(null);
     setResult(null);
+    setPendingMedal(null);
     setScreen("quiz");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -131,23 +141,25 @@ export default function Home() {
   const answerQuestion = (answer: string) => {
     if (!current) return;
     if (answer === current.answer) {
-      const stars: Star = attempt === 1 ? 2 : 1;
+      const stars: Star = attempt === 1 ? 3 : attempt === 2 ? 2 : 1;
       const oldStars = progress[current.id] ?? 0;
       const wasNew = oldStars === 0;
       const nextStars = Math.max(oldStars, stars) as Star;
       if (nextStars !== oldStars) setProgress((old) => ({ ...old, [current.id]: nextStars }));
       if (wasNew) {
         const nextCount = discoveredCount + 1;
-        if (nextCount % 10 === 0) setNewMedal(nextCount / 10);
+        setPendingMedal(nextCount % 10 === 0 ? nextCount / 10 : null);
+      } else {
+        setPendingMedal(null);
       }
       setResult({ animal: current, correct: true, stars });
       setScreen("result");
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-    if (attempt === 1) {
+    if (attempt < 3) {
       setWrongChoice(answer);
-      setAttempt(2);
+      setAttempt((attempt + 1) as 2 | 3);
       window.setTimeout(() => setWrongChoice(null), 650);
       return;
     }
@@ -156,12 +168,22 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const continueFromResult = () => {
+    if (pendingMedal !== null) {
+      setNewMedal(pendingMedal);
+      setPendingMedal(null);
+      return;
+    }
+    pickQuestion();
+  };
+
   const openBook = () => { setSelectedAnimal(null); setScreen("book"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goHome = () => { setSelectedAnimal(null); setScreen("home"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const resetProgress = () => {
     window.localStorage.removeItem("animal-quiz-progress-v1");
     setProgress({});
     setNewMedal(null);
+    setPendingMedal(null);
     setSelectedAnimal(null);
     setResult(null);
     setShowResetConfirm(false);
@@ -192,7 +214,7 @@ export default function Home() {
             <button className="menu-card book-card" onClick={openBook}><span className="menu-icon">📖</span><span><strong>どうぶつずかん</strong><small>{discoveredCount} / 100 みつけたよ</small></span><span className="menu-arrow">›</span></button>
             <button className="menu-card medal-card" onClick={() => setScreen("medals")}><span className="menu-icon">🏅</span><span><strong>メダル</strong><small>{Math.floor(discoveredCount / 10)} / 10 ゲット</small></span><span className="menu-arrow">›</span></button>
           </div>
-          <div className="home-score"><span>あつめた ほし</span><strong>⭐ {totalStars}</strong><span>/ 200</span></div>
+          <div className="home-score"><span>あつめた ほし</span><strong>⭐ {totalStars}</strong><span>/ 300</span></div>
           <p className="save-note">この たんまつに きろくが のこるよ</p>
           <button className="reset-link" onClick={() => setShowResetConfirm(true)} disabled={discoveredCount === 0 && totalStars === 0}>↻ きろくを リセット</button>
         </section>
@@ -205,7 +227,12 @@ export default function Home() {
           <div className="hint-card">
             <div className="hint-title"><span>💡</span> 3つの ヒント</div>
             <ol>{current.hints.map((hint, index) => <li key={hint}><span>{index + 1}</span><p>{hint}</p></li>)}</ol>
-            {attempt === 2 && <div className="special-hint" role="status"><span>✨ スペシャルヒント ✨</span><strong>「{current.initial}」から はじまる<br />どうぶつだよ！</strong></div>}
+            {attempt >= 2 && (
+              <div className="extra-hints" role="status">
+                <div className="special-hint extra-hint-one"><span>✨ ついかヒント 1</span><strong>{current.extraHint}</strong></div>
+                {attempt === 3 && <div className="special-hint extra-hint-two"><span>🔤 ついかヒント 2</span><strong>「{current.initial}」から はじまる どうぶつだよ！</strong></div>}
+              </div>
+            )}
           </div>
           <p className="choose-label">こたえを えらんでね</p>
           <div className="choice-grid">
@@ -215,7 +242,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-          {attempt === 2 && <p className="try-again">だいじょうぶ！ もう いちど かんがえてみよう</p>}
+          {attempt > 1 && <p className="try-again">{attempt === 2 ? "ついかヒントを よんで、もう いちど！" : "さいごの チャレンジ！ ゆっくり かんがえよう"}</p>}
         </section>
       )}
 
@@ -228,7 +255,7 @@ export default function Home() {
           <p className="answer-caption">この どうぶつは…</p><h3>{result.animal.name}</h3>
           {result.correct ? <Stars count={result.stars} large /> : <p className="no-star">つぎは きっと わかるよ！</p>}
           <div className="fact-card"><span>🌱</span><div><strong>どうぶつ まめちしき</strong><p>{result.animal.fact}</p></div></div>
-          <button className="primary-button next-button" onClick={pickQuestion}>つぎの もんだい <span>›</span></button>
+          <button className="primary-button next-button" onClick={continueFromResult}>つぎの もんだい <span>›</span></button>
           <button className="secondary-button" onClick={openBook}>📖 ずかんを みる</button>
         </section>
       )}
@@ -239,12 +266,14 @@ export default function Home() {
           <div className="progress-card">
             <div className="progress-main"><span>みつけた どうぶつ</span><strong>{discoveredCount}<small> / 100</small></strong></div>
             <div className="progress-track"><span style={{ width: `${discoveredCount}%` }} /></div>
-            <div className="difficulty-progress"><span>🟢 {countsByDifficulty.easy}/60</span><span>🟡 {countsByDifficulty.medium}/30</span><span>🔴 {countsByDifficulty.hard}/10</span></div>
+            <div className="difficulty-progress">
+              {difficultyOrder.map((difficulty) => <span key={difficulty}>{difficultyIcons[difficulty]} {countsByDifficulty[difficulty]}/{difficultyTotals[difficulty]}</span>)}
+            </div>
           </div>
           <div className="filters" aria-label="なんいどで しぼりこむ">
-            {(["all", "easy", "medium", "hard"] as Filter[]).map((value) => (
+            {(["all", ...difficultyOrder] as Filter[]).map((value) => (
               <button key={value} className={filter === value ? "active" : ""} onClick={() => setFilter(value)}>
-                {value === "all" ? "ぜんぶ" : `${difficultyIcons[value]} ${value === "easy" ? "かんたん" : value === "medium" ? "むずかしい" : "すごく むずかしい"}`}
+                {value === "all" ? "ぜんぶ" : `${difficultyIcons[value]} ${difficultyLabels[value]}`}
               </button>
             ))}
           </div>
@@ -311,7 +340,7 @@ export default function Home() {
             <div className="big-medal">{newMedal === 10 ? "👑" : newMedal === 5 ? "🏆" : "🏅"}</div>
             <h2>{medalNames[newMedal - 1]}</h2><span>{newMedal * 10}ぴきの どうぶつを みつけたよ！</span>
             {newMedal === 10 && <div className="complete-animals" aria-hidden="true"><AnimalArt animal={animals[0]} /><AnimalArt animal={animals[1]} /><AnimalArt animal={animals[2]} /><AnimalArt animal={animals[4]} /><AnimalArt animal={animals[40]} /></div>}
-            <button className="primary-button" onClick={() => setNewMedal(null)}>やったー！</button>
+            <button className="primary-button" onClick={() => { setNewMedal(null); pickQuestion(); }}>やったー！</button>
           </article>
         </div>
       )}
