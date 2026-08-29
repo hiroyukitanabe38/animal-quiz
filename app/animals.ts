@@ -127,9 +127,29 @@ const hard: AnimalSeed[] = [
 const seeded = [...easy, ...medium, ...hard];
 
 function choicesFor(seed: AnimalSeed, index: number): [string, string, string, string] {
-  const pool = seeded.filter((animal) => animal.difficulty === seed.difficulty && animal.id !== seed.id);
-  const offset = index * 7;
-  return [seed.name, pool[offset % pool.length].name, pool[(offset + 9) % pool.length].name, pool[(offset + 17) % pool.length].name];
+  const wrongChoices = [...new Set(
+    seeded
+      .filter((animal) => animal.difficulty === seed.difficulty && animal.name !== seed.name)
+      .map((animal) => animal.name),
+  )];
+
+  if (wrongChoices.length < 3) {
+    throw new Error(`${seed.name} の不正解候補が3種類未満です`);
+  }
+
+  const offset = (index * 7) % wrongChoices.length;
+  const choices: [string, string, string, string] = [
+    seed.name,
+    wrongChoices[offset],
+    wrongChoices[(offset + 1) % wrongChoices.length],
+    wrongChoices[(offset + 2) % wrongChoices.length],
+  ];
+
+  if (new Set(choices).size !== choices.length) {
+    throw new Error(`${seed.name} の選択肢に重複があります`);
+  }
+
+  return choices;
 }
 
 export const animals: AnimalQuiz[] = seeded.map((seed, index) => ({
@@ -144,4 +164,3 @@ export const difficultyLabels: Record<Difficulty, string> = {
   medium: "ちょっと むずかしい",
   hard: "おとなでも あやしい",
 };
-
