@@ -1,33 +1,37 @@
-/* Sprite positioning corrections.
-   These rules are applied to the shared AnimalArt component, so the fixes affect
-   result screens, the animal book, modal details, and any other place that reuses
-   the same sprite artwork.
+/* Sprite positioning corrections applied to the shared AnimalArt component.
+   These fixes therefore affect result screens, the animal book grid,
+   animal detail modals, and every other place that reuses AnimalArt.
 
-   The source sprite sheets contain a few animals that sit too close to a cell edge,
-   so adjacent-row / adjacent-column pixels can become visible. We correct the
-   viewed sprite window itself instead of clipping the animal artwork. */
+   Important: background-position percentages on a 3x2 sprite sheet are not a
+   simple pixel translation. For top-row cells, using a negative Y value moves
+   the sprite artwork UP inside the viewport. The previous -5% correction was
+   therefore the wrong direction for animals that were already too high.
+
+   Keep the horizontal corrections that fixed left/right alignment, but move the
+   affected top-row artwork DOWN with a positive Y offset so the animal body is
+   visually centered and neighboring-row fragments stay outside the viewport. */
 
 /* sheet-03 top row
    0% 0%  = hippo
    50% 0% = rhino
 */
 
-/* カバ: 左右位置に加えて、少し下へ寄せて上下の余白を整える */
+/* カバ: 左右補正を維持し、上下は下方向へ移動 */
 .animal-art[style*="sheet-03.webp"][style*="0% 0%"] {
-  background-position: -3% -5% !important;
+  background-position: -3% 5% !important;
   clip-path: none !important;
 }
 
-/* サイ: 鼻まで収まる左右位置を維持しつつ、少し下へ寄せて下側の混入を外す */
+/* サイ: 鼻まで収まる左右補正を維持し、上下は下方向へ移動 */
 .animal-art[style*="sheet-03.webp"][style*="50% 0%"] {
-  background-position: 44% -5% !important;
+  background-position: 44% 5% !important;
   clip-path: none !important;
 }
 
 /* sheet-04 top-left = pig
-   ブタは上寄りで、下端に隣接セル由来の小さな色片が見えるため、
-   表示窓を下へ寄せて本体を中央に置く。 */
+   ブタはスクリーンショット上で本体が上寄りかつ下側に隣接セル由来の
+   小さな色片が見えていたため、表示窓を明確に下方向へ補正する。 */
 .animal-art[style*="sheet-04.webp"][style*="0% 0%"] {
-  background-position: 0% -5% !important;
+  background-position: 0% 7% !important;
   clip-path: none !important;
 }
