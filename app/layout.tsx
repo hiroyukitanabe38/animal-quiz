@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./sprite-fixes.css";
 
 const siteUrl = "https://animal-quiz-s-c8d7.vercel.app";
 

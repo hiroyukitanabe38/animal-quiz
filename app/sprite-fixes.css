@@ -1,0 +1,6 @@
+/* Targeted sprite-cell cleanup.
+   The rhino artwork in sheet-03 shares stray pixels from the neighboring cells.
+   Clip only the contaminated right/bottom edges without changing the sprite position. */
+.animal-art[style*="sheet-03.webp"][style*="50% 0%"] {
+  clip-path: inset(0 18% 14% 0);
+}
