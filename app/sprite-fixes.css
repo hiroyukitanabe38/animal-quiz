@@ -3,23 +3,31 @@
    result screens, the animal book, modal details, and any other place that reuses
    the same sprite artwork.
 
-   sheet-03 top row:
-   - 0% 0%  = hippo
-   - 50% 0% = rhino
+   The source sprite sheets contain a few animals that sit too close to a cell edge,
+   so adjacent-row / adjacent-column pixels can become visible. We correct the
+   viewed sprite window itself instead of clipping the animal artwork. */
 
-   The source artwork for these two animals is not centered inside its nominal
-   3x2 sprite cell. The rhino extends too far to the left (cutting the nose) while
-   pixels from the crocodile cell appear on the right. The hippo is also slightly
-   left-heavy. Shift the viewed sprite window instead of clipping the animal. */
+/* sheet-03 top row
+   0% 0%  = hippo
+   50% 0% = rhino
+*/
 
-/* カバ: 少し右へ寄せ、右隣セル側の不要な領域を見せにくくする */
+/* カバ: 左右位置に加えて、少し下へ寄せて上下の余白を整える */
 .animal-art[style*="sheet-03.webp"][style*="0% 0%"] {
-  background-position: -3% 0% !important;
+  background-position: -3% -5% !important;
   clip-path: none !important;
 }
 
-/* サイ: 表示領域を左へずらして鼻まで収め、右側のワニ断片を外す */
+/* サイ: 鼻まで収まる左右位置を維持しつつ、少し下へ寄せて下側の混入を外す */
 .animal-art[style*="sheet-03.webp"][style*="50% 0%"] {
-  background-position: 44% 0% !important;
+  background-position: 44% -5% !important;
+  clip-path: none !important;
+}
+
+/* sheet-04 top-left = pig
+   ブタは上寄りで、下端に隣接セル由来の小さな色片が見えるため、
+   表示窓を下へ寄せて本体を中央に置く。 */
+.animal-art[style*="sheet-04.webp"][style*="0% 0%"] {
+  background-position: 0% -5% !important;
   clip-path: none !important;
 }
