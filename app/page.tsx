@@ -15,15 +15,14 @@ const medalNames = [
 ];
 
 const difficultyIcons: Record<Difficulty, string> = { easy: "🟢", medium: "🟡", hard: "🔴" };
-const animalIndexById = new Map(animals.map((animal, index) => [animal.id, index]));
-const animalSheetSources = Array.from({ length: 17 }, (_, index) => `/animals/sheet-${String(index + 1).padStart(2, "0")}.webp`);
+const animalImageSources = animals.map((animal) => `/animals/individual/${animal.imageKey}.webp`);
 let animalSheetsLoadPromise: Promise<void> | null = null;
 
 function preloadAnimalSheets(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   if (animalSheetsLoadPromise) return animalSheetsLoadPromise;
 
-  animalSheetsLoadPromise = Promise.all(animalSheetSources.map((source) => new Promise<void>((resolve) => {
+  animalSheetsLoadPromise = Promise.all(animalImageSources.map((source) => new Promise<void>((resolve) => {
     const image = new Image();
     image.decoding = "async";
     image.onload = () => {
@@ -55,17 +54,11 @@ function Stars({ count, large = false }: { count: Star; large?: boolean }) {
 }
 
 function AnimalArt({ animal, className = "", silhouette = false }: { animal: AnimalQuiz; className?: string; silhouette?: boolean }) {
-  const index = animalIndexById.get(animal.id) ?? 0;
-  const sheet = Math.floor(index / 6) + 1;
-  const cell = index % 6;
-  const column = cell % 3;
-  const row = Math.floor(cell / 3);
   return (
     <span
       className={`animal-art ${silhouette ? "animal-silhouette" : ""} ${className}`}
       style={{
-        backgroundImage: `url(/animals/sheet-${String(sheet).padStart(2, "0")}.webp)`,
-        backgroundPosition: `${column * 50}% ${row * 100}%`,
+        backgroundImage: `url(/animals/individual/${animal.imageKey}.webp)`,
       }}
       role={silhouette ? undefined : "img"}
       aria-label={silhouette ? undefined : animal.name}
@@ -92,6 +85,13 @@ export default function Home() {
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       try {
+        // Temporary visual-audit helper. Removed before merging to main.
+        if (new URLSearchParams(window.location.search).has("audit")) {
+          setProgress(Object.fromEntries(animals.map((animal) => [animal.id, 2])) as Progress);
+          setScreen("book");
+          setReady(true);
+          return;
+        }
         const saved = window.localStorage.getItem("animal-quiz-progress-v1");
         if (saved) setProgress(JSON.parse(saved) as Progress);
       } catch {}
